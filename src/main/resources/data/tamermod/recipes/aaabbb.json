@@ -1,0 +1,22 @@
+{
+  "tier": 0,
+  "type": "tamermod:fusion_crafting",
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "minecraft:stick"
+    },
+    {
+      "item": "minecraft:stone"
+    },
+    {
+      "item": "minecraft:diamond",
+      "count": 3
+    }
+  ],
+  "output": {
+    "item": "minecraft:glass",
+    "count": 10
+  },
+  "craftTime": 1000
+}

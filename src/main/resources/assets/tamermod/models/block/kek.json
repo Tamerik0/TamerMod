@@ -1,0 +1,9 @@
+{
+  "parent": "block/slab",
+  "textures": {
+    "bottom": "tamermod:block/molecular_transformer",
+    "top": "tamermod:block/molecular_transformer",
+    "side": "tamermod:block/molecular_transformer"
+  },
+  "render_type": "solid"
+}

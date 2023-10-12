@@ -1,0 +1,5 @@
+{
+  "top": "tamermod:block/molecular_transformer/top",
+  "bottom": "tamermod:block/molecular_transformer/bottom",
+  "side": "tamermod:block/molecular_transformer/side"
+}

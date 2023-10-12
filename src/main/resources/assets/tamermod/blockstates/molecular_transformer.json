@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tamermod:block/molecular_transformer"
+    },
+    "facing=east": {
+      "model": "tamermod:block/molecular_transformer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "tamermod:block/molecular_transformer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tamermod:block/molecular_transformer",
+      "y": 270
+    }
+  }
+}

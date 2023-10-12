@@ -1,0 +1,21 @@
+{
+  "tier": 0,
+  "type": "tamermod:fusion_crafting",
+  "ingredients": [
+    {
+      "count": 2,
+      "item": "minecraft:cobblestone"
+    },
+    {
+      "item": "minecraft:stone"
+    },
+    {
+      "item": "minecraft:stone",
+      "count": 2
+    }
+  ],
+  "output": {
+    "item": "minecraft:diamond"
+  },
+  "craftTime": 100
+}

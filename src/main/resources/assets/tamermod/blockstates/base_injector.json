@@ -1,0 +1,23 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "tamermod:block/injector",
+      "x": 90
+    },
+    "facing=east": {
+      "model": "tamermod:block/injector",
+      "x": 90,
+      "y": 90
+    },
+    "facing=south": {
+      "x": 90,
+      "model": "tamermod:block/injector",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "tamermod:block/injector",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

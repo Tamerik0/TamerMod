@@ -1,0 +1,14 @@
+{
+  "type": "tamermod:mega_machine_crafting",
+  "ingredients": [
+    {"count":2, "item": "minecraft:stick" },
+    { "item":"minecraft:stone"}
+  ],
+  "fluidInput": {"amount":1000,"fluid":"minecraft:water"},
+  "output": {
+    "item": "minecraft:diamond"
+  },
+  "euInput": 100000,
+  "rfInput": 200000,
+  "craftTime": 100
+}

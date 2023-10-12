@@ -1,0 +1,13 @@
+{
+  "parent": "block/cube",
+  "textures": {
+    "down": "advanced_solars:block/molecular_transformer/bottom",
+    "up": "advanced_solars:block/molecular_transformer/bottom",
+    "north": "advanced_solars:block/molecular_transformer/top",
+    "east": "advanced_solars:block/molecular_transformer/side",
+    "south": "advanced_solars:block/molecular_transformer/side",
+    "west": "advanced_solars:block/molecular_transformer/side",
+    "particle": "advanced_solars:block/molecular_transformer/side"
+  },
+  "render_type": "solid"
+}
