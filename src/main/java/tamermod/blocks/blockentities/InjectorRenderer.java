@@ -1,5 +1,6 @@
 package tamermod.blocks.blockentities;
 
+import codechicken.lib.vec.Vector3;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
@@ -17,6 +18,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import tamermod.blocks.BaseEntityBlock;
+import tamermod.blocks.blockentities.components.injectors.base.InjectorComponent;
+import tamermod.client.EffectLib;
+
+import java.util.Random;
 
 public class InjectorRenderer implements BlockEntityRenderer<BaseInjectorBlockEntity> {
     public InjectorRenderer(BlockEntityRendererProvider.Context context) {
@@ -43,6 +48,12 @@ public class InjectorRenderer implements BlockEntityRenderer<BaseInjectorBlockEn
             itemRenderer.renderStatic(itemStack, ItemTransforms.TransformType.FIXED, getLightLevel(pBlockEntity.getLevel(),
                             pBlockEntity.getBlockPos()),
                     OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, 1);
+            var injector = pBlockEntity.getComponent(InjectorComponent.class);
+            if(injector.isCrafting) {
+                pPoseStack.popPose();
+                pPoseStack.pushPose();
+                EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.ZERO, Vector3.fromBlockPos(injector.craftingCore.blockEntity.getBlockPos()).subtract(Vector3.fromBlockPos(pBlockEntity.getBlockPos())),9,new Random().nextInt(),1,1,true,0,0x3512D0);
+            }
             pPoseStack.popPose();
         }
     }
