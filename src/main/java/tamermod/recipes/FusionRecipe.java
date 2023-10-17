@@ -58,10 +58,17 @@ public class FusionRecipe implements Recipe<ExtendedCraftDataContainer> {
 
     @Override
     public boolean matches(ExtendedCraftDataContainer pContainer, Level pLevel) {
+        System.out.println("matches/");
+        System.out.println("bbaa");
+        System.out.println(pContainer.getContainerSize());
         for(int i = 0; i<pContainer.getContainerSize(); i++){
+            System.out.println("aaaabbxgsdf");
+            System.out.println(pContainer.getContainerSize());
+            System.out.println(i);
             System.out.println(pContainer.getItem(i));
+            System.out.println("ffaaaabbxaa");
         }
-        System.out.println();
+        System.out.println("ksjdbmsd");
         if (!itemInput.get(0).test(pContainer.getItem(0)))
             return false;
         var items = (ArrayList<ItemStack>) pContainer.getItems().clone();
@@ -73,6 +80,12 @@ public class FusionRecipe implements Recipe<ExtendedCraftDataContainer> {
             }
         }
         ingr.remove(0);
+        for(int i = 0; i<ingr.size(); i++){
+            System.out.println("b");
+            System.out.println(ingr.get(i));
+        }
+        System.out.println();
+        System.out.println("/matches");
         return recCheck(ingr, items);
     }
 

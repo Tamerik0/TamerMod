@@ -3,7 +3,6 @@ package tamermod.blocks.blockentities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
@@ -18,11 +17,11 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 public class ComponentBlockEntity extends BlockEntity {
-    boolean needsUpdateAndSync = false;
-    boolean post_init = false;
+    boolean needsSync = true;
+    int initFhase = 0;
 
     public void scheduleUpdateAndSync() {
-        needsUpdateAndSync = true;
+        needsSync = true;
     }
 
     List<AbstractBlockEntityComponent> components;
@@ -33,7 +32,6 @@ public class ComponentBlockEntity extends BlockEntity {
         for (AbstractBlockEntityComponent component : this.components) {
             component.init(this);
         }
-        post_init = true;
     }
 
     public <T> T getComponent(Class<T> type) {
@@ -59,64 +57,51 @@ public class ComponentBlockEntity extends BlockEntity {
             component.load(compound);
         }
         setChanged();
+        initFhase = 1;
     }
-
+    @Override
+    public CompoundTag getUpdateTag() {
+        return this.saveWithFullMetadata();
+    }
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
         for (AbstractBlockEntityComponent component : components) {
             component.handleUpdateTag(tag);
         }
-        setChanged();
     }
-
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
-
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
-        CompoundTag compoundtag = pkt.getTag();
-        load(compoundtag);
-    }
-
-    @Override
-    public CompoundTag getUpdateTag() {
-        return this.saveWithFullMetadata();
-    }
-
     @Override
     public void setRemoved() {
         for (AbstractBlockEntityComponent component : components) {
-            component.preSetRemoved();
+            component.setRemoved();
         }
         super.setRemoved();
-        for (AbstractBlockEntityComponent component : components) {
-            component.postSetRemoved();
-        }
     }
 
     @Override
     public void onChunkUnloaded() {
         for (AbstractBlockEntityComponent component : components) {
-            component.preOnChunkUnloaded();
+            component.onChunkUnloaded();
         }
         super.onChunkUnloaded();
-        for (AbstractBlockEntityComponent component : components) {
-            component.postOnChunkUnloaded();
-        }
     }
 
     @Override
     public void onLoad() {
+        if(!getLevel().isClientSide() && initFhase == 0){
+            initFhase = 2;
+            for (AbstractBlockEntityComponent component : components) {
+                component.postInit();
+            }
+        }
         for (AbstractBlockEntityComponent component : components) {
-            component.preOnLoad();
+            component.onLoad();
         }
         super.onLoad();
-        for (AbstractBlockEntityComponent component : components) {
-            component.postOnLoad();
-        }
-        setChanged();
     }
 
     @Override
@@ -130,26 +115,27 @@ public class ComponentBlockEntity extends BlockEntity {
     }
 
     public void tick(Level lvl, BlockPos pos, BlockState state) {
+        if (needsSync) {
+            if (!lvl.isClientSide()) {
+                setChanged();
+                getLevel().sendBlockUpdated(getBlockPos(), getLevel().getBlockState(getBlockPos()), getLevel().getBlockState(getBlockPos()), 0);
+                needsSync = false;
+            }
+        }
         for (AbstractBlockEntityComponent component : components) {
-            if (post_init) {
-                if (component.tick_cd >= component.tick_delay) {
+            if(initFhase >= 1) {
+                if(initFhase == 1){
                     component.postInit();
+                }
+                if (component.tick_cd >= component.tick_delay) {
+                    component.tick();
                     component.tick_cd = 0;
                 } else {
                     component.tick_cd += 1;
                 }
             }
-            component.tick();
         }
-        post_init = false;
-        if (needsUpdateAndSync) {
-            setChanged();
-            getLevel().sendBlockUpdated(getBlockPos(), getLevel().getBlockState(getBlockPos()), getLevel().getBlockState(getBlockPos()), 2);
-            needsUpdateAndSync = false;
-        }
-    }
-
-    public void setChanged() {
-        super.setChanged();
+        if(initFhase == 1)
+            initFhase = 2;
     }
 }

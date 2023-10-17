@@ -19,6 +19,7 @@ import net.minecraft.world.level.material.Material;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.phys.BlockHitResult;
+import org.jetbrains.annotations.NotNull;
 import tamermod.blocks.blockentities.ComponentBlockEntity;
 
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class BaseEntityBlock extends Block implements EntityBlock {
         BlockEntity blockEntity = level.getBlockEntity(pos);
         return blockEntity == null ? false : blockEntity.triggerEvent(id, param);
     }
-    public static ComponentBlockEntity getBlockEntity(Level level, BlockPos pos){
+    public static ComponentBlockEntity getBlockEntity(@NotNull Level level, BlockPos pos){
         return (ComponentBlockEntity)level.getBlockEntity(pos);
     }
 }

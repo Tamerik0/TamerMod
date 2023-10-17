@@ -28,12 +28,14 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
     public void postInit() {
         findForCore();
         if (isCrafting) {
+            System.out.println(_corePos);
             craftingCore = BaseEntityBlock.getBlockEntity(blockEntity.getLevel(), _corePos).getComponent(FusionCoreComponent.class);
         }
     }
     public void stopCrafting(){
         craftingCore = null;
         isCrafting = false;
+        blockEntity.scheduleUpdateAndSync();
     }
 
     public void setBroken() {
@@ -88,9 +90,6 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
         if (isCrafting) {
             var arr = compound.getIntArray("core");
             _corePos = new BlockPos(arr[0], arr[1], arr[2]);
-        }
-        if(blockEntity.getLevel()!=null){
-            craftingCore = BaseEntityBlock.getBlockEntity(blockEntity.getLevel(), _corePos).getComponent(FusionCoreComponent.class);
         }
     }
 }

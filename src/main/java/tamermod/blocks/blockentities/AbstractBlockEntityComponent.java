@@ -23,11 +23,7 @@ public abstract class AbstractBlockEntityComponent {
     public void load(CompoundTag compound){};
     public void handleUpdateTag(CompoundTag tag){};
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) { return null; }
-    public void preSetRemoved(){};
-    public void preOnChunkUnloaded(){};
-    public void preOnLoad(){};
-
-    public void postSetRemoved(){};
-    public void postOnChunkUnloaded(){};
-    public void postOnLoad(){};
+    public void setRemoved(){};
+    public void onChunkUnloaded(){};
+    public void onLoad(){};
 }

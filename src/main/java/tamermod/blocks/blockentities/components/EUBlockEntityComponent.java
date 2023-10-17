@@ -67,7 +67,7 @@ public class EUBlockEntityComponent extends AbstractBlockEntityComponent impleme
         this.energy = compound.getInt("eu_energy");
     }
     @Override
-    public void preSetRemoved() {
+    public void setRemoved() {
         if (this.loaded) {
             this.onUnloaded(false);
         }
@@ -97,13 +97,13 @@ public class EUBlockEntityComponent extends AbstractBlockEntityComponent impleme
         IC2.NETWORKING.get(this.isServer).handleInitialChange(getBlockEntity(), tag);
     }
     @Override
-    public void preOnChunkUnloaded() {
+    public void onChunkUnloaded() {
         if (loaded) {
             onUnloaded(true);
         }
     }
     @Override
-    public void postOnLoad() {
+    public void onLoad() {
         if (!loaded) {
             if (isServer) {
                 IC2.TICK_HANDLER.addWorldCallback(getBlockEntity().getLevel(), (Level world) -> {

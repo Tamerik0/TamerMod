@@ -104,6 +104,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void findForInjectors() {
+        connectedInjectors.clear();
         var world = getBlockEntity().getLevel();
         var pos = getBlockEntity().getBlockPos();
         for (int x = pos.getX() - maxInjectorDistance; x <= pos.getX() + maxInjectorDistance; x++) {
@@ -172,15 +173,17 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         isCrafting = false;
         for (var injector : craftingInjectors) {
             injector.stopCrafting();
-            injector.getBlockEntity().scheduleUpdateAndSync();
         }
         findInjectorsCD = 999999;
+        blockEntity.scheduleUpdateAndSync();
     }
 
     public void tick() {
         if (getBlockEntity().getLevel().isClientSide()) {
             return;
         }
+        System.out.println(connectedInjectors.size());
+        System.out.println(craftingInjectors.size());
         findInjectorsCD++;
         if (findInjectorsCD >= findInjectorsDelay) {
             findForInjectors();
@@ -220,17 +223,20 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         return getRecipe(injectors);
     }
     FusionRecipe getRecipe(List<InjectorComponent> injectors) {
+        System.out.println("getRecipe/");
+        System.out.println(injectors.size());
         Level level = getBlockEntity().getLevel();
         ExtendedCraftDataContainer inventory = new ExtendedCraftDataContainer(injectors.size() + 1);
         inventory.setItem(0, inventoryComponent.getItem(0));
         for (int i = 0; i < injectors.size(); i++) {
             inventory.setItem(i + 1, injectors.get(i).getBlockEntity().getComponent(InventoryComponent.class).getItem(0));
         }
-        System.out.println(inventory.getContainerSize());
         var rec = level.getRecipeManager().getRecipeFor(FusionRecipe.type, inventory, level);
         if (rec.isPresent()) {
+            System.out.println("recipe");
             return rec.get();
         }
+        System.out.println("null");
         return null;
     }
 
