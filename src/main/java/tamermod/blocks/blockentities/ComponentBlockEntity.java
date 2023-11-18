@@ -57,12 +57,15 @@ public class ComponentBlockEntity extends BlockEntity {
             component.load(compound);
         }
         setChanged();
-        initFhase = 1;
+        if(initFhase == 0)
+            initFhase = 1;
     }
+
     @Override
     public CompoundTag getUpdateTag() {
         return this.saveWithFullMetadata();
     }
+
     @Override
     public void handleUpdateTag(CompoundTag tag) {
         super.handleUpdateTag(tag);
@@ -70,10 +73,12 @@ public class ComponentBlockEntity extends BlockEntity {
             component.handleUpdateTag(tag);
         }
     }
+
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         return ClientboundBlockEntityDataPacket.create(this);
     }
+
     @Override
     public void setRemoved() {
         for (AbstractBlockEntityComponent component : components) {
@@ -92,9 +97,12 @@ public class ComponentBlockEntity extends BlockEntity {
 
     @Override
     public void onLoad() {
-        if(!getLevel().isClientSide() && initFhase == 0){
+//        System.out.println("onLoad/");
+        if (!getLevel().isClientSide() && initFhase == 0) {
+//            System.out.println("kek");
             initFhase = 2;
             for (AbstractBlockEntityComponent component : components) {
+//                System.out.println("rofl");
                 component.postInit();
             }
         }
@@ -115,6 +123,7 @@ public class ComponentBlockEntity extends BlockEntity {
     }
 
     public void tick(Level lvl, BlockPos pos, BlockState state) {
+//        System.out.println("TETick/");
         if (needsSync) {
             if (!lvl.isClientSide()) {
                 setChanged();
@@ -123,8 +132,9 @@ public class ComponentBlockEntity extends BlockEntity {
             }
         }
         for (AbstractBlockEntityComponent component : components) {
-            if(initFhase >= 1) {
-                if(initFhase == 1){
+            if (initFhase >= 1) {
+                if (initFhase == 1) {
+//                    System.out.println("PostInit");
                     component.postInit();
                 }
                 if (component.tick_cd >= component.tick_delay) {
@@ -135,7 +145,9 @@ public class ComponentBlockEntity extends BlockEntity {
                 }
             }
         }
-        if(initFhase == 1)
+//        System.out.println("aaaaaa");
+        if (initFhase == 1)
             initFhase = 2;
+//        System.out.println(initFhase);
     }
 }

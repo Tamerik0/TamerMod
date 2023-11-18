@@ -34,6 +34,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     boolean lastRedstone;
 
     public void setBroken() {
+//        System.out.println("setBroken/");
         for (var i : connectedInjectors) {
             i.connectedCores.remove(this);
             i.findForCore();
@@ -46,6 +47,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void postInit() {
+//        System.out.println("postInit/");
         if (isCrafting) {
             for (var pos : _injectors) {
                 craftingInjectors.add(BaseEntityBlock.getBlockEntity(blockEntity.getLevel(), pos).getComponent(InjectorComponent.class));
@@ -56,6 +58,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void redstoneSignalUpdated(int value) {
+//        System.out.println("redstoneSignalUpdated/");
         if (!lastRedstone && value != 0) {
             lastRedstone = true;
             redstoneOn();
@@ -65,8 +68,9 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void redstoneOn() {
+//        System.out.println("redstoneOn/");
         if (!isCrafting) {
-            System.out.println("!crafting");
+//            System.out.println("!crafting");
             if (hasRecipe()) {
                 startCrafting();
             }
@@ -74,6 +78,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void saveAdditional(CompoundTag compound) {
+//        System.out.println("saveAdditional/");
         compound.putBoolean("isCrafting", isCrafting);
         compound.putInt("progress", progress);
         if (currentRecipe != null)
@@ -91,6 +96,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void load(CompoundTag compound) {
+//        System.out.println("load/");
         isCrafting = compound.getBoolean("isCrafting");
         progress = compound.getInt("progress");
         maxProgress = compound.getInt("maxprogress");
@@ -104,6 +110,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void findForInjectors() {
+//        System.out.println("findForInjectors/");
         connectedInjectors.clear();
         var world = getBlockEntity().getLevel();
         var pos = getBlockEntity().getBlockPos();
@@ -141,11 +148,13 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
 
 
     public void init(ComponentBlockEntity be) {
+//        System.out.println("init/");
         super.init(be);
         inventoryComponent = be.getComponent(InventoryComponent.class);
     }
 
     public void startCrafting() {
+//        System.out.println("startCrafting/");
         currentRecipe = getRecipe();
         isCrafting = true;
         progress = 0;
@@ -167,6 +176,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void stopCrafting() {
+//        System.out.println("stopCrafting/");
         progress = 0;
         maxProgress = 0;
         currentRecipe = null;
@@ -182,14 +192,18 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         if (getBlockEntity().getLevel().isClientSide()) {
             return;
         }
-        System.out.println(connectedInjectors.size());
-        System.out.println(craftingInjectors.size());
+//        System.out.println("tick/");
+//        System.out.println(connectedInjectors.size());
+//        System.out.println(craftingInjectors.size());
         findInjectorsCD++;
         if (findInjectorsCD >= findInjectorsDelay) {
             findForInjectors();
             findInjectorsCD = 0;
         }
         if (isCrafting) {
+//            System.out.println("crafting...");
+            System.out.println(craftingInjectors.size());
+            System.out.println(connectedInjectors.size());
             if (currentRecipe == getRecipe(craftingInjectors)) {
                 if (currentRecipe == null) {
                     stopCrafting();
@@ -215,6 +229,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     FusionRecipe getRecipe() {
+//        System.out.println("getRecipe1/");
         ArrayList<InjectorComponent> injectors = new ArrayList<>();
         for(var i:connectedInjectors){
             if(!i.isCrafting)
@@ -223,24 +238,29 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         return getRecipe(injectors);
     }
     FusionRecipe getRecipe(List<InjectorComponent> injectors) {
-        System.out.println("getRecipe/");
+//        System.out.println("getRecipe/");
         System.out.println(injectors.size());
         Level level = getBlockEntity().getLevel();
+        System.out.println(injectors.size() + 1);
         ExtendedCraftDataContainer inventory = new ExtendedCraftDataContainer(injectors.size() + 1);
+        System.out.println(inventory.getContainerSize());
         inventory.setItem(0, inventoryComponent.getItem(0));
         for (int i = 0; i < injectors.size(); i++) {
             inventory.setItem(i + 1, injectors.get(i).getBlockEntity().getComponent(InventoryComponent.class).getItem(0));
         }
+        System.out.println(inventory.getContainerSize());
         var rec = level.getRecipeManager().getRecipeFor(FusionRecipe.type, inventory, level);
+        System.out.println(inventory.getContainerSize());
         if (rec.isPresent()) {
-            System.out.println("recipe");
+//            System.out.println("recipe");
             return rec.get();
         }
-        System.out.println("null");
+//        System.out.println("null");
         return null;
     }
 
     private void craftItem() {
+//        System.out.println("craftItem/");
         if (currentRecipe != null) {
             var ingr = new ArrayList<>(currentRecipe.getIngredientsWithAmount());
             for (int i = 0; i < craftingInjectors.size(); i++) {
@@ -260,6 +280,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     private boolean hasRecipe() {
+//        System.out.println("hasRecipe/");
         FusionRecipe recipe = getRecipe();
         return recipe != null;
     }

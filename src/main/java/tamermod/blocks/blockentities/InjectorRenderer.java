@@ -32,6 +32,7 @@ public class InjectorRenderer implements BlockEntityRenderer<BaseInjectorBlockEn
                        MultiBufferSource pBufferSource, int pPackedLight, int pPackedOverlay) {
         ItemRenderer itemRenderer = Minecraft.getInstance().getItemRenderer();
         ItemStack itemStack = pBlockEntity.getRenderedItemStack();
+        var injector = pBlockEntity.getComponent(InjectorComponent.class);
         if (itemStack != null && itemStack != ItemStack.EMPTY) {
             pPoseStack.pushPose();
             pPoseStack.translate(0.5, 0.5f, 0.5f);
@@ -48,8 +49,8 @@ public class InjectorRenderer implements BlockEntityRenderer<BaseInjectorBlockEn
             itemRenderer.renderStatic(itemStack, ItemTransforms.TransformType.FIXED, getLightLevel(pBlockEntity.getLevel(),
                             pBlockEntity.getBlockPos()),
                     OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, 1);
-            var injector = pBlockEntity.getComponent(InjectorComponent.class);
-            if(injector.isCrafting) {
+
+            if(injector.isCrafting && injector.craftingCore != null) {
                 pPoseStack.popPose();
                 pPoseStack.pushPose();
                 EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.ZERO, Vector3.fromBlockPos(injector.craftingCore.blockEntity.getBlockPos()).subtract(Vector3.fromBlockPos(pBlockEntity.getBlockPos())),9,new Random().nextInt(),1,1,true,0,0x3512D0);
