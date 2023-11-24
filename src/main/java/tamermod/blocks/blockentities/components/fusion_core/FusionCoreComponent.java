@@ -206,8 +206,6 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         }
         if (isCrafting) {
 //            System.out.println("crafting...");
-            System.out.println(craftingInjectors.size());
-            System.out.println(connectedInjectors.size());
             if (currentRecipe == getRecipe(craftingInjectors)) {
                 if (currentRecipe == null) {
                     stopCrafting();
@@ -233,34 +231,22 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     FusionRecipe getRecipe() {
-        System.out.println("getRecipe1/");
         ArrayList<InjectorComponent> injectors = new ArrayList<>();
         for (var i : connectedInjectors) {
-            System.out.println(i.getBlockEntity().getBlockPos());
             if (!i.isCrafting)
                 injectors.add(i);
-        }
-        System.out.println();
-        for (var i : injectors) {
-            System.out.println(i.getBlockEntity().getBlockPos());
         }
         return getRecipe(injectors);
     }
 
     FusionRecipe getRecipe(List<InjectorComponent> injectors) {
-        System.out.println("getRecipe/");
-        System.out.println(injectors.size());
         Level level = getBlockEntity().getLevel();
-        System.out.println(injectors.size() + 1);
         ExtendedCraftDataContainer inventory = new ExtendedCraftDataContainer(injectors.size() + 1);
-        System.out.println(inventory.getContainerSize());
         inventory.setItem(0, inventoryComponent.getItem(0));
         for (int i = 0; i < injectors.size(); i++) {
             inventory.setItem(i + 1, injectors.get(i).getBlockEntity().getComponent(InventoryComponent.class).getItem(0));
         }
-        System.out.println(inventory.getContainerSize());
         var rec = level.getRecipeManager().getRecipeFor(FusionRecipe.type, inventory, level);
-        System.out.println(inventory.getContainerSize());
         if (rec.isPresent()) {
 //            System.out.println("recipe");
             return rec.get();
