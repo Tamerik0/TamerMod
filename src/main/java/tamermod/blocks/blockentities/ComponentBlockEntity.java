@@ -12,12 +12,14 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.util.LazyOptional;
+import tamermod.blocks.blockentities.components.injectors.base.InjectorComponent;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
 public class ComponentBlockEntity extends BlockEntity {
     boolean needsSync = true;
+    boolean postLoad = false;
     int initFhase = 0;
 
     public void scheduleUpdateAndSync() {
@@ -56,8 +58,9 @@ public class ComponentBlockEntity extends BlockEntity {
         for (AbstractBlockEntityComponent component : components) {
             component.load(compound);
         }
+        postLoad = true;
         setChanged();
-        if(initFhase == 0)
+        if (initFhase == 0)
             initFhase = 1;
     }
 
@@ -97,7 +100,7 @@ public class ComponentBlockEntity extends BlockEntity {
 
     @Override
     public void onLoad() {
-//        System.out.println("onLoad/");
+        System.out.println("onLoad/");
         if (!getLevel().isClientSide() && initFhase == 0) {
 //            System.out.println("kek");
             initFhase = 2;
@@ -106,11 +109,10 @@ public class ComponentBlockEntity extends BlockEntity {
                 component.postInit();
             }
         }
-        for (AbstractBlockEntityComponent component : components) {
-            component.onLoad();
-        }
+
         super.onLoad();
     }
+
 
     @Override
     public <T> LazyOptional<T> getCapability(Capability<T> capability, @Nullable Direction facing) {
@@ -130,6 +132,12 @@ public class ComponentBlockEntity extends BlockEntity {
                 getLevel().sendBlockUpdated(getBlockPos(), getLevel().getBlockState(getBlockPos()), getLevel().getBlockState(getBlockPos()), 0);
                 needsSync = false;
             }
+        }
+        if (postLoad) {
+            for (AbstractBlockEntityComponent component : components) {
+                component.onLoad();
+            }
+            postLoad = false;
         }
         for (AbstractBlockEntityComponent component : components) {
             if (initFhase >= 1) {

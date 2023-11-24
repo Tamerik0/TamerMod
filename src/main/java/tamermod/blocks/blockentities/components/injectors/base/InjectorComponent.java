@@ -1,6 +1,8 @@
 package tamermod.blocks.blockentities.components.injectors.base;
 
+import codechicken.lib.vec.Vector3;
 import com.mojang.math.Vector3d;
+import com.mojang.math.Vector3f;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
@@ -25,14 +27,17 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
         tick_delay = 2;
     }
 
-    public void postInit() {
+    public void onLoad() {
+        System.out.println("onload");
+        System.out.println(blockEntity.getLevel().isClientSide() ? "Client" : "Server");
         findForCore();
         if (isCrafting) {
             System.out.println(_corePos);
             craftingCore = BaseEntityBlock.getBlockEntity(blockEntity.getLevel(), _corePos).getComponent(FusionCoreComponent.class);
         }
     }
-    public void stopCrafting(){
+
+    public void stopCrafting() {
         craftingCore = null;
         isCrafting = false;
         blockEntity.scheduleUpdateAndSync();
@@ -49,6 +54,9 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
     int maxCoreDistance = 10;
 
     public void tick() {
+        System.out.println("InjectorTick");
+        System.out.println(blockEntity.getLevel().isClientSide() ? "Client" : "Server");
+        System.out.println(craftingCore);
         if (!blockEntity.getLevel().isClientSide() && craftingCore != null) {
             var _self_pos = blockEntity.getBlockPos();
             var self_pos = new Vector3d(_self_pos.getX(), _self_pos.getY(), _self_pos.getZ());
@@ -68,8 +76,7 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
                     if (world.getBlockEntity(new BlockPos(x, y, z)) instanceof ComponentBlockEntity be) {
                         var core = be.getComponent(FusionCoreComponent.class);
                         if (core != null) {
-                            if (!core.connectedInjectors.contains(this))
-                                core.findForInjectors();
+                            if (!core.connectedInjectors.contains(this)) core.findForInjectors();
                         }
                     }
                 }
@@ -78,18 +85,27 @@ public class InjectorComponent extends AbstractBlockEntityComponent {
     }
 
     public void saveAdditional(CompoundTag compound) {
+        System.out.println("save");
+        System.out.println(blockEntity.getLevel().isClientSide() ? "Client" : "Server");
         compound.putBoolean("isCrafting", isCrafting);
+        System.out.println(isCrafting);
         if (isCrafting) {
             var corePos = craftingCore.getBlockEntity().getBlockPos();
             compound.putIntArray("core", new int[]{corePos.getX(), corePos.getY(), corePos.getZ()});
+            System.out.println(corePos);
+
         }
     }
 
     public void load(CompoundTag compound) {
+        System.out.println("load");
+        System.out.println(blockEntity.getLevel().isClientSide() ? "Client" : "Server");
         isCrafting = compound.getBoolean("isCrafting");
+        System.out.println(isCrafting);
         if (isCrafting) {
             var arr = compound.getIntArray("core");
             _corePos = new BlockPos(arr[0], arr[1], arr[2]);
+            System.out.println(_corePos);
         }
     }
 }

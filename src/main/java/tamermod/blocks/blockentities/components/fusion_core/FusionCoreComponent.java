@@ -46,9 +46,10 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         }
     }
 
-    public void postInit() {
+    public void onLoad() {
 //        System.out.println("postInit/");
         if (isCrafting) {
+            craftingInjectors.clear();
             for (var pos : _injectors) {
                 craftingInjectors.add(BaseEntityBlock.getBlockEntity(blockEntity.getLevel(), pos).getComponent(InjectorComponent.class));
             }
@@ -63,7 +64,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
             lastRedstone = true;
             redstoneOn();
         }
-        if(value == 0)
+        if (value == 0)
             lastRedstone = false;
     }
 
@@ -102,6 +103,7 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
         maxProgress = compound.getInt("maxprogress");
         if (isCrafting) {
             var injectors = compound.getList("crafting_injectors", Tag.TAG_INT_ARRAY);
+            _injectors.clear();
             for (int i = 0; i < injectors.size(); i++) {
                 var pos = injectors.getIntArray(i);
                 _injectors.add(new BlockPos(pos[0], pos[1], pos[2]));
@@ -154,22 +156,24 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     public void startCrafting() {
-//        System.out.println("startCrafting/");
+        System.out.println("startCrafting/");
         currentRecipe = getRecipe();
         isCrafting = true;
         progress = 0;
         maxProgress = currentRecipe.craftTime;
         var ingr = new ArrayList<>(currentRecipe.getIngredients());
         for (int i = 0; i < connectedInjectors.size(); i++) {
-            var inv = connectedInjectors.get(i).getBlockEntity().getComponent(InventoryComponent.class);
-            for (int j = 0; j < ingr.size(); j++) {
-                if (ingr.get(j).test(inv.getItem(0))) {
-                    craftingInjectors.add(connectedInjectors.get(i));
-                    connectedInjectors.get(i).isCrafting = true;
-                    connectedInjectors.get(i).craftingCore = this;
-                    connectedInjectors.get(i).getBlockEntity().scheduleUpdateAndSync();
-                    ingr.remove(j);
-                    break;
+            if (!connectedInjectors.get(i).isCrafting) {
+                var inv = connectedInjectors.get(i).getBlockEntity().getComponent(InventoryComponent.class);
+                for (int j = 0; j < ingr.size(); j++) {
+                    if (ingr.get(j).test(inv.getItem(0))) {
+                        craftingInjectors.add(connectedInjectors.get(i));
+                        connectedInjectors.get(i).isCrafting = true;
+                        connectedInjectors.get(i).craftingCore = this;
+                        connectedInjectors.get(i).getBlockEntity().scheduleUpdateAndSync();
+                        ingr.remove(j);
+                        break;
+                    }
                 }
             }
         }
@@ -229,16 +233,22 @@ public class FusionCoreComponent extends AbstractBlockEntityComponent {
     }
 
     FusionRecipe getRecipe() {
-//        System.out.println("getRecipe1/");
+        System.out.println("getRecipe1/");
         ArrayList<InjectorComponent> injectors = new ArrayList<>();
-        for(var i:connectedInjectors){
-            if(!i.isCrafting)
+        for (var i : connectedInjectors) {
+            System.out.println(i.getBlockEntity().getBlockPos());
+            if (!i.isCrafting)
                 injectors.add(i);
+        }
+        System.out.println();
+        for (var i : injectors) {
+            System.out.println(i.getBlockEntity().getBlockPos());
         }
         return getRecipe(injectors);
     }
+
     FusionRecipe getRecipe(List<InjectorComponent> injectors) {
-//        System.out.println("getRecipe/");
+        System.out.println("getRecipe/");
         System.out.println(injectors.size());
         Level level = getBlockEntity().getLevel();
         System.out.println(injectors.size() + 1);

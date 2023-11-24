@@ -49,11 +49,13 @@ public class InjectorRenderer implements BlockEntityRenderer<BaseInjectorBlockEn
             itemRenderer.renderStatic(itemStack, ItemTransforms.TransformType.FIXED, getLightLevel(pBlockEntity.getLevel(),
                             pBlockEntity.getBlockPos()),
                     OverlayTexture.NO_OVERLAY, pPoseStack, pBufferSource, 1);
-
-            if(injector.isCrafting && injector.craftingCore != null) {
+            if (injector.isCrafting && injector.craftingCore != null) {
                 pPoseStack.popPose();
                 pPoseStack.pushPose();
-                EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.ZERO, Vector3.fromBlockPos(injector.craftingCore.blockEntity.getBlockPos()).subtract(Vector3.fromBlockPos(pBlockEntity.getBlockPos())),9,new Random().nextInt(),1,1,true,0,0x3512D0);
+                EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.ZERO, Vector3.fromBlockPos(injector.craftingCore.blockEntity.getBlockPos()).subtract(Vector3.fromBlockPos(pBlockEntity.getBlockPos())), 9, new Random().nextInt(), 1, 1, true, 0, 0x3512D0);
+
+//                EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.ZERO, new Vector3(10, 3, 0), 9, new Random().nextInt(), 1, 1, true, 0, 0x3512D0);
+//                EffectLib.renderLightningP2PRotate(pPoseStack, pBufferSource, Vector3.fromBlockPos(pBlockEntity.getBlockPos()), Vector3.fromBlockPos(injector.craftingCore.blockEntity.getBlockPos()), 9, new Random().nextInt(), 1, 1, true, 0, 0x3512D0);
             }
             pPoseStack.popPose();
         }
